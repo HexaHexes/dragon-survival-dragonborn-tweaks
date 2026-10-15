@@ -1,0 +1,33 @@
+{
+  "growth_range": {
+    "max": 25.0,
+    "min": 10.0
+  },
+  "modifiers": [
+    {
+      "amount": {
+        "type": "minecraft:linear",
+        "base": 0,
+        "per_level_above_first": 0.2
+      },
+      "attribute": "minecraft:generic.max_health",
+      "operation": "add_value"
+    },
+    {
+      "amount": -0.3333,
+      "attribute": "minecraft:generic.scale",
+      "operation": "add_value"
+    }
+  ],
+  "ticks_until_grown": 216000,
+  "growth_items": [
+    {
+      "growth_in_ticks": -72000,
+      "items": "dragonsurvival:star_bone"
+    },
+    {
+      "growth_in_ticks": 0,
+      "items": "dragonsurvival:star_heart"
+    }
+  ]
+}

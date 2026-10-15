@@ -1,0 +1,34 @@
+{
+  "values": [
+    "dragonsurvival:forest_dragon",
+    "dragonsurvival:cave_dragon",
+    "dragonsurvival:sea_dragon",
+    "dragonsurvival:dragonborn_forest",
+    "dragonsurvival:dragonborn_cave",
+    "dragonsurvival:dragonborn_sea",
+    {
+      "id": "dragonsurvival:bee_queen",
+      "required": false
+    },
+    {
+      "id": "dragonsurvival:brain_stealer_dragon",
+      "required": false
+    },
+    {
+      "id": "dragonsurvival:claw_monster",
+      "required": false
+    },
+    {
+      "id": "dragonsurvival:realistic_spider",
+      "required": false
+    },
+    {
+      "id": "dragonsurvival:griffin",
+      "required": false
+    },
+    {
+      "id": "dragonsurvival:slime_dragon",
+      "required": false
+    }
+  ]
+}

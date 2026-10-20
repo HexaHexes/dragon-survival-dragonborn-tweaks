@@ -1,0 +1,175 @@
+name: Release
+
+# Datapack release: on every push to main, re-lint, resolve the channel from the
+# version in pack.mcmeta, then - only when the version was bumped - zip the datapack
+# (pack.mcmeta + data/ at the zip root, exactly the shape players drop into datapacks/),
+# tag it, and publish a GitHub release. Alpha publishing is opt-in via the
+# ALPHA_RELEASES repo variable and is off by default.
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+# Serialize releases. Two rapid pushes must queue rather than race for the same tag.
+concurrency:
+  group: release-main
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: zip-tag-release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Lint before releasing
+        run: |
+          set -euo pipefail
+          jq empty pack.mcmeta
+          while IFS= read -r -d '' f; do jq empty "$f"; done < <(find data -name '*.json' -print0)
+
+      - name: Determine release channel
+        id: channel
+        env:
+          ALPHA_RELEASES: ${{ vars.ALPHA_RELEASES }}
+        run: |
+          set -euo pipefail
+
+          ver() { echo "$1" | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.]+)?' | head -1 | sed 's/^v//'; }
+
+          NEW_VERSION=$(ver "$(cat pack.mcmeta)")
+          OLD_VERSION=$(git show HEAD~1:pack.mcmeta | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.]+)?' | head -1 | sed 's/^v//' || true)
+          SHORT_SHA=$(git rev-parse --short=7 HEAD)
+
+          echo "version: $OLD_VERSION -> $NEW_VERSION (commit $SHORT_SHA)"
+
+          if [ "$NEW_VERSION" = "$OLD_VERSION" ]; then
+            CHANNEL="alpha"; REASON="no version bump since the previous commit"; TAG="v${NEW_VERSION}+g${SHORT_SHA}"
+          else
+            case "$NEW_VERSION" in
+              *-alpha*|*-Alpha*|*-ALPHA*) CHANNEL="alpha"; REASON="version bumped with an -alpha suffix"; TAG="v${NEW_VERSION}+g${SHORT_SHA}" ;;
+              *-*) CHANNEL="beta"; REASON="version bumped with a pre-release suffix"; TAG="v${NEW_VERSION}" ;;
+              *) CHANNEL="stable"; REASON="version bumped with a clean version"; TAG="v${NEW_VERSION}" ;;
+            esac
+          fi
+
+          # A beta/stable bump must be an isolated version bump - defense in depth in
+          # case the CI guard was bypassed.
+          if [ "$CHANNEL" != "alpha" ] && [ "$NEW_VERSION" != "$OLD_VERSION" ]; then
+            EXTRA=$(git show --name-only --format= HEAD | grep -v '^pack\.mcmeta$' | grep -v '^$' || true)
+            if [ -n "$EXTRA" ]; then
+              echo "::error::Refusing to publish a $CHANNEL release: this bump commit also changed:"
+              echo "$EXTRA"
+              exit 1
+            fi
+          fi
+
+          echo "channel: $CHANNEL ($REASON)"
+
+          # Alpha releases are opt-in. Unset counts as off (silence is the safer failure).
+          ALPHA_ON=$(printf '%s' "${ALPHA_RELEASES:-}" | tr '[:upper:]' '[:lower:]')
+          case "$ALPHA_ON" in true|1|yes|on) ALPHA_ON="true" ;; *) ALPHA_ON="false" ;; esac
+
+          if [ "$CHANNEL" = "alpha" ] && [ "$ALPHA_ON" != "true" ]; then
+            RELEASE="false"
+            echo "::notice::Skipping the $CHANNEL release for $TAG. Set ALPHA_RELEASES to true to publish alphas."
+          else
+            RELEASE="true"
+          fi
+
+          {
+            echo "channel=$CHANNEL"; echo "tag=$TAG"; echo "version=$NEW_VERSION"; echo "release=$RELEASE"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Generate changelog
+        id: changelog
+        if: steps.channel.outputs.release == 'true'
+        env:
+          CHANNEL: ${{ steps.channel.outputs.channel }}
+        run: |
+          set -euo pipefail
+
+          if [ "$CHANNEL" = "alpha" ]; then
+            BASELINE=$(git tag --list 'v*' --sort=-creatordate | head -1 || true)
+          else
+            BASELINE=$(git tag --list 'v*' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)
+          fi
+
+          if [ -z "$BASELINE" ]; then
+            BODY="Initial release."$'\n\n'$(git log --pretty=format:"- %s" HEAD)
+          else
+            COMMITS=$(git log --pretty=format:"- %s" "${BASELINE}..HEAD" || true)
+            if [ -z "$COMMITS" ]; then BODY="No user-facing changes since ${BASELINE}."
+            else BODY="Changes since ${BASELINE}:"$'\n\n'"$COMMITS"; fi
+          fi
+
+          { echo "body<<EOF"; echo "$BODY"; echo "EOF"; } >> "$GITHUB_OUTPUT"
+
+      - name: Zip the datapack
+        if: steps.channel.outputs.release == 'true'
+        env:
+          VERSION: ${{ steps.channel.outputs.version }}
+        run: |
+          set -euo pipefail
+          ZIP="dragonborn-tweaks-${VERSION}.zip"
+          # pack.mcmeta and data/ at the zip root - the shape players drop into datapacks/.
+          rm -f "$ZIP"
+          zip -r "$ZIP" pack.mcmeta data
+          ls -la "$ZIP"
+          echo "ZIP=$ZIP" >> "$GITHUB_ENV"
+
+      - name: Create or update annotated tag
+        if: steps.channel.outputs.release == 'true'
+        env:
+          TAG: ${{ steps.channel.outputs.tag }}
+        run: |
+          set -euo pipefail
+          cat > tag-message.md <<EOF
+          ${{ steps.changelog.outputs.body }}
+          EOF
+
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" > /dev/null 2>&1; then
+            git tag -fa "$TAG" -F tag-message.md
+          else
+            git tag -a "$TAG" -F tag-message.md
+          fi
+          git push -f origin "refs/tags/$TAG"
+
+      - name: Create or update GitHub release
+        if: steps.channel.outputs.release == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.channel.outputs.tag }}
+          CHANNEL: ${{ steps.channel.outputs.channel }}
+        run: |
+          set -euo pipefail
+
+          PRERELEASE_FLAG=""
+          if [ "$CHANNEL" != "stable" ]; then PRERELEASE_FLAG="--prerelease"; fi
+
+          cat > release-notes.md <<EOF
+          ${{ steps.changelog.outputs.body }}
+          EOF
+
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release edit "$TAG" --notes-file release-notes.md $PRERELEASE_FLAG
+            gh release upload "$TAG" "$ZIP" --clobber
+          else
+            gh release create "$TAG" "$ZIP" \
+              --title "$TAG" \
+              --notes-file release-notes.md \
+              $PRERELEASE_FLAG
+          fi
+
+          echo "Published $TAG as a $CHANNEL release ($ZIP)."

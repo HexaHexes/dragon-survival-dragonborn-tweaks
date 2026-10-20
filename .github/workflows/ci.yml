@@ -1,0 +1,99 @@
+name: CI
+
+# This is a Paxi datapack - there is nothing to compile. The gate here is a JSON lint
+# (every datapack file must parse) plus the same version-bump discipline the mod repos
+# use, read from pack.mcmeta instead of gradle.properties.
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: datapack-json-lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Validate pack.mcmeta parses
+        run: jq empty pack.mcmeta
+
+      # A run that linted zero files would pass vacuously, so assert a non-zero count.
+      - name: Validate every datapack JSON parses
+        run: |
+          set -euo pipefail
+          COUNT=0
+          while IFS= read -r -d '' f; do
+            if ! jq empty "$f"; then
+              echo "::error::Invalid JSON: $f"
+              exit 1
+            fi
+            COUNT=$((COUNT + 1))
+          done < <(find data -name '*.json' -print0)
+
+          echo "Validated $COUNT JSON files."
+          if [ "$COUNT" -le 0 ]; then
+            echo "::error::No datapack JSON files were linted. This check must not pass vacuously."
+            exit 1
+          fi
+
+  version-bump:
+    name: version-bump
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Enforce version bump rules
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}
+          HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+
+          ver() { grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.]+)?' "$1" | head -1 | sed 's/^v//'; }
+
+          NEW_VERSION=$(ver pack.mcmeta)
+          OLD_VERSION=$(git show "$BASE:pack.mcmeta" | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.]+)?' | head -1 | sed 's/^v//')
+
+          echo "base version: $OLD_VERSION"
+          echo "head version: $NEW_VERSION"
+
+          CHANGED=$(git diff --name-only "$BASE" "$HEAD")
+          echo "--- changed files ---"
+          echo "$CHANGED"
+
+          if [ "$NEW_VERSION" = "$OLD_VERSION" ]; then
+            echo "No version bump. OK."
+            exit 0
+          fi
+
+          case "$NEW_VERSION" in
+            *-alpha*|*-Alpha*|*-ALPHA*) CHANNEL="alpha" ;;
+            *-*) CHANNEL="beta" ;;
+            *) CHANNEL="stable" ;;
+          esac
+
+          echo "detected channel: $CHANNEL"
+
+          if [ "$CHANNEL" = "alpha" ]; then
+            echo "Alpha version bump. Bundling other changes is permitted. OK."
+            exit 0
+          fi
+
+          EXTRA=$(echo "$CHANGED" | grep -v '^pack\.mcmeta$' | grep -v '^$' || true)
+          if [ -n "$EXTRA" ]; then
+            echo "::error::A $CHANNEL version bump must change pack.mcmeta and nothing else."
+            echo "$EXTRA"
+            exit 1
+          fi
+
+          echo "Isolated $CHANNEL version bump. OK."

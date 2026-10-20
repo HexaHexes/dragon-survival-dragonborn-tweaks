@@ -1,0 +1,158 @@
+name: Version Bump
+
+# Opens an isolated version-bump PR on demand for this datapack. The version lives in
+# pack.mcmeta (the pack.description string carries a vX.Y.Z suffix), so this workflow
+# seds that string rather than a gradle.properties. The PR touches pack.mcmeta only -
+# the same rule the ci.yml version-bump guard enforces.
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Which part of the version to raise.
+        type: choice
+        required: true
+        default: minor
+        options: [major, minor, patch, none]
+      channel:
+        description: stable leaves a clean version. beta appends -beta.N.
+        type: choice
+        required: true
+        default: stable
+        options: [stable, beta]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: version-bump
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    name: open-bump-pr
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.BUMP_PR_TOKEN || github.token }}
+
+      - name: Resolve the new version
+        id: version
+        env:
+          BUMP: ${{ inputs.bump }}
+          CHANNEL: ${{ inputs.channel }}
+        run: |
+          set -euo pipefail
+
+          CURRENT=$(grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.]+)?' pack.mcmeta | head -1 | sed 's/^v//')
+          echo "current version: $CURRENT"
+
+          BASE="${CURRENT%%-*}"
+          SUFFIX=""
+          if [ "$CURRENT" != "$BASE" ]; then SUFFIX="${CURRENT#"$BASE"}"; SUFFIX="${SUFFIX#-}"; fi
+
+          if ! printf '%s' "$BASE" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::version is '$CURRENT', base '$BASE' is not X.Y.Z. Fix pack.mcmeta by hand."
+            exit 1
+          fi
+
+          MAJOR=$(printf '%s' "$BASE" | cut -d. -f1); MINOR=$(printf '%s' "$BASE" | cut -d. -f2); PATCH=$(printf '%s' "$BASE" | cut -d. -f3)
+
+          if [ -n "$SUFFIX" ]; then NEW_BASE="$BASE"
+          else
+            case "$BUMP" in
+              major) NEW_BASE="$((MAJOR + 1)).0.0" ;;
+              minor) NEW_BASE="$MAJOR.$((MINOR + 1)).0" ;;
+              patch) NEW_BASE="$MAJOR.$MINOR.$((PATCH + 1))" ;;
+              none)  NEW_BASE="$BASE" ;;
+              *) echo "::error::Unknown bump '$BUMP'."; exit 1 ;;
+            esac
+          fi
+
+          if [ "$CHANNEL" = "stable" ]; then
+            NEW_VERSION="$NEW_BASE"
+          else
+            N=1
+            if [ -n "$SUFFIX" ] && [ "$NEW_BASE" = "$BASE" ] && printf '%s' "$SUFFIX" | grep -Eq '^beta\.[0-9]+$'; then N=$((${SUFFIX#beta.} + 1)); fi
+            NEW_VERSION="${NEW_BASE}-beta.${N}"
+          fi
+
+          if [ "$NEW_VERSION" = "$CURRENT" ]; then
+            echo "::error::This run produces no change: $CURRENT -> $NEW_VERSION."
+            exit 1
+          fi
+
+          echo "new version: $NEW_VERSION"
+          echo "version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+          echo "branch=version-bump/$NEW_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Branch, commit and push
+        env:
+          NEW_VERSION: ${{ steps.version.outputs.version }}
+          BRANCH: ${{ steps.version.outputs.branch }}
+        run: |
+          set -euo pipefail
+          git checkout -b "$BRANCH"
+          sed -i -E "s/v[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.]+)?/v$NEW_VERSION/" pack.mcmeta
+
+          APPLIED=$(grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.]+)?' pack.mcmeta | head -1 | sed 's/^v//')
+          if [ "$APPLIED" != "$NEW_VERSION" ]; then
+            echo "::error::sed wrote '$APPLIED' but '$NEW_VERSION' was expected."
+            exit 1
+          fi
+
+          git add pack.mcmeta
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -m "Bump datapack version to v$NEW_VERSION"
+
+          TOUCHED=$(git show --name-only --format= HEAD)
+          if [ "$TOUCHED" != "pack.mcmeta" ]; then
+            echo "::error::Bump commit touched more than pack.mcmeta:"; echo "$TOUCHED"; exit 1
+          fi
+
+          git push origin "$BRANCH"
+          echo "Pushed $BRANCH"
+
+      - name: Open the pull request
+        env:
+          GH_TOKEN: ${{ secrets.BUMP_PR_TOKEN || github.token }}
+          NEW_VERSION: ${{ steps.version.outputs.version }}
+          BRANCH: ${{ steps.version.outputs.branch }}
+          BUMP: ${{ inputs.bump }}
+          CHANNEL: ${{ inputs.channel }}
+        run: |
+          set -euo pipefail
+          cat > body.md <<EOF
+          ## Changeset
+
+          Isolated datapack version bump -> \`v$NEW_VERSION\` (bump: \`$BUMP\`, channel: \`$CHANNEL\`).
+
+          \`pack.mcmeta\` is the only file changed.
+
+          ## Checklist
+
+          - [x] This PR bumps the \`pack.mcmeta\` version **and nothing else**
+          - [ ] New version is a clean bump — releases as stable
+          EOF
+
+          gh pr create --base main --head "$BRANCH" \
+            --title "Bump datapack version to v$NEW_VERSION" \
+            --body-file body.md
+
+      - name: Run CI on the branch
+        env:
+          GH_TOKEN: ${{ secrets.BUMP_PR_TOKEN || github.token }}
+          BRANCH: ${{ steps.version.outputs.branch }}
+          BUMP_PR_TOKEN: ${{ secrets.BUMP_PR_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -n "${BUMP_PR_TOKEN:-}" ]; then
+            echo "PR opened with BUMP_PR_TOKEN; its pull_request event runs CI normally."
+            exit 0
+          fi
+          echo "::warning::No BUMP_PR_TOKEN; dispatching ci.yml on $BRANCH so checks arrive."
+          gh workflow run ci.yml --ref "$BRANCH"

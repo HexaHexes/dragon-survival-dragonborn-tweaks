@@ -1,32 +1,36 @@
 # Dragon Survival Dragonborn Tweaks
 
-A Paxi datapack for the **Tensura RPG** pack (MC 1.21.1) with two Dragon Survival gameplay tweaks for dragonborn.
+A small **datapack** for Dragon Survival that makes dragonborn practical to play in a
+normal base, with two tweaks: a shorter dragonborn, and no claw slots.
 
 ## What it changes
 
-### 1. Dragonborn size → 2.0 blocks
-Dragonborn in young/adult/ancient stages are shrunk so they fit a standard **1×2 doorway**, via a `generic.scale` modifier of **`-0.3333`** applied in the three stage files:
+### 1. Dragonborn fit through doors
 
-- `data/dragonsurvival/dragonsurvival/dragon_stage/dragonborn_young.json`
-- `data/dragonsurvival/dragonsurvival/dragon_stage/dragonborn_adult.json`
-- `data/dragonsurvival/dragonsurvival/dragon_stage/dragonborn_ancient.json`
+Dragonborn in the young, adult and ancient stages are shrunk to **2 blocks tall**, so
+they fit a standard 1×2 doorway without crouching or clipping.
 
 ### 2. Claw slots disabled
-`data/dragonsurvival/tags/dragonsurvival/dragon_species/no_claw_slots.json` removes claw slots for all 6 active species (plus `required: false` entries for currently disabled addon species — bee queen, brain stealer dragon, claw monster, realistic spider, griffin, slime dragon — so they're covered if re-enabled later).
+
+Removes the claw equipment slots for all six active species. Entries for currently
+disabled addon species (bee queen, brain stealer dragon, claw monster, realistic spider,
+griffin, slime dragon) are included too, so they're covered if those addons return.
+
+## Getting it in-game
+
+No configuration needed — it just applies once installed (see below).
 
 ## Dependencies
 
-| Requirement | Notes |
-|---|---|
-| Dragon Survival (`dragonsurvival`) | All files target the `dragonsurvival` namespace — meaningless without it |
-| Paxi | Auto-loads the pack from `config/paxi/datapacks/` |
+| | Requirement | Notes |
+|---|---|---|
+| **Required** | [Dragon Survival](https://www.curseforge.com/minecraft/mc-mods/dragon-survival) | All files target its namespace — meaningless without it |
+| **Required** | [Paxi](https://www.curseforge.com/minecraft/mc-mods/paxi) | Auto-loads the pack from `config/paxi/datapacks/` |
 
-No other mods are required; tag entries for absent addons are `required: false` and are simply skipped.
+No other mods are required — entries for absent addons are marked optional and simply
+skipped.
 
-## Tuning
-
-- Scale: change `-0.3333` in the three `dragon_stage/*.json` files (`-0.3333` ≈ 2.0 blocks tall).
-- Species: add/remove entries in `no_claw_slots.json`.
+Made for the **Tensura RPG** pack (Minecraft 1.21.1).
 
 ## Install
 
@@ -36,8 +40,13 @@ Copy this folder (or the unzipped pack) to:
 <instance>/config/paxi/datapacks/dragon-survival-dragonborn-tweaks/
 ```
 
-Paxi loads it automatically; no restart beyond the usual world reload.
+Paxi loads it automatically — just reload the world.
 
-## Editing workflow
+## Credits
 
-This repository is the source of truth. The copy inside the CurseForge instance's `config/paxi/datapacks/` is the deployed version — after editing here, re-copy the folder over the deployed one.
+- Built for [Dragon Survival](https://www.curseforge.com/minecraft/mc-mods/dragon-survival), loaded by [Paxi](https://www.curseforge.com/minecraft/mc-mods/paxi).
+
+## License
+
+GNU Lesser General Public License v2.1 — see [`LICENSE`](LICENSE).
+Copyright (c) 2026 Bitwise Madness.

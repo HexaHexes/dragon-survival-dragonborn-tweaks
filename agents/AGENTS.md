@@ -87,6 +87,7 @@ Before starting any new development in this repo:
 ## House style
 
 - **No icons** unless the user explicitly asks. Icons are being removed across all repos.
+- **No emojis, ever.** Prohibited in all code, docs, configs, and commit messages.
 - READMEs are **player-facing only**: pitch, mechanics in plain terms, in-game usage,
   required/optional dependencies, credits, license. No build internals, no class names.
 - All repos are **LGPL v2.1**, copyright Bitwise Madness. `NOTICE` / attribution files

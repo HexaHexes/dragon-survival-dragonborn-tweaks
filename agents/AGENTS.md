@@ -1,4 +1,4 @@
-﻿# Agent rules and conventions â€” Dragon Survival Dragonborn Tweaks
+# Agent rules and conventions â€” Dragon Survival Dragonborn Tweaks
 
 **Repo:** `HexaHexes/dragon-survival-dragonborn-tweaks` Â· **Branch:** `main`
 **Type:** Paxi **datapack** (no Gradle, no jar, no Java) Â· **Pack format:** 48 (MC 1.21.1)

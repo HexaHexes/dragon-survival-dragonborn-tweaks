@@ -82,8 +82,8 @@ Made for the **Tensura RPG** pack (Minecraft 1.21.1).
 Copy this folder (or the unzipped pack) to **both** places:
 
 ```
-<instance>/config/paxi/datapacks/dragon-survival-dragonborn-tweaks/
-<instance>/config/paxi/resourcepacks/dragon-survival-dragonborn-tweaks/
+<instance>/config/paxi/datapacks/ds-dragonborn-tweaks/
+<instance>/config/paxi/resourcepacks/ds-dragonborn-tweaks/
 ```
 
 The same folder serves as datapack and resource pack - Paxi loads it

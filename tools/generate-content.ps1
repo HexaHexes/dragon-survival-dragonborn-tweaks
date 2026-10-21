@@ -1,6 +1,6 @@
 #requires -version 5.1
 <#
-  Single-source generator for the dragon-survival-dragonborn-tweaks pack.
+  Single-source generator for the ds-dragonborn-tweaks pack.
 
   Everything under data/ and assets/ that derives from Dragon Survival or its
   addons is generated here, straight from the mod jars (source of truth), so a

@@ -1,6 +1,6 @@
 # Agent rules and conventions - Dragon Survival Dragonborn Tweaks
 
-**Repo:** `HexaHexes/dragon-survival-dragonborn-tweaks` | **Branch:** `main`
+**Repo:** `HexaHexes/ds-dragonborn-tweaks` | **Branch:** `main`
 **Type:** Paxi **pack** - one folder/zip that is both a datapack (`data/`) and a
 resource pack (`assets/`). No Gradle, no jar, no Java.
 **Formats:** data 48, resource 34, declared via `supported_formats` 34-48 in

@@ -1,6 +1,10 @@
 {
   "pack": {
     "pack_format": 48,
-    "description": "Tensura RPG tweaks: 2-block Dragonborn, no claw slots for any species — v1.0.0"
+    "supported_formats": {
+      "min_inclusive": 34,
+      "max_inclusive": 48
+    },
+    "description": "Tensura RPG tweaks: 2-block Dragonborn with full stage parity, no claw slots, vanilla interaction range, mana growth for every race, spider ancient stage - v1.0.0"
   }
 }

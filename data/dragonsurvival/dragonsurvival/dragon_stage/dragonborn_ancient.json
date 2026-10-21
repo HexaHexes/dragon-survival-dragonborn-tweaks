@@ -1,14 +1,14 @@
 {
   "growth_range": {
-    "max": 60.0,
-    "min": 40.0
+    "min": 60.0,
+    "max": 300.0
   },
   "modifiers": [
     {
       "amount": {
         "type": "minecraft:linear",
-        "base": 6,
-        "per_level_above_first": 0.2
+        "base": 20.5,
+        "per_level_above_first": 0.5
       },
       "attribute": "minecraft:generic.max_health",
       "operation": "add_value"
@@ -17,9 +17,28 @@
       "amount": -0.3333,
       "attribute": "minecraft:generic.scale",
       "operation": "add_value"
+    },
+    {
+      "amount": 0,
+      "attribute": "minecraft:player.entity_interaction_range",
+      "operation": "add_value"
+    },
+    {
+      "amount": 0,
+      "attribute": "minecraft:player.block_interaction_range",
+      "operation": "add_value"
+    },
+    {
+      "amount": {
+        "type": "minecraft:linear",
+        "base": -2.3655,
+        "per_level_above_first": 0.342
+      },
+      "attribute": "dragonsurvival:mana",
+      "operation": "add_value"
     }
   ],
-  "ticks_until_grown": 1728000,
+  "ticks_until_grown": 69120000,
   "growth_items": [
     {
       "growth_in_ticks": -72000,

@@ -27,6 +27,10 @@
       "required": false
     },
     {
+      "id": "dragonsurvival:mega_typhus",
+      "required": false
+    },
+    {
       "id": "dragonsurvival:slime_dragon",
       "required": false
     }

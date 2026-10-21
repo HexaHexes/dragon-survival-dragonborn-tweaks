@@ -1,0 +1,97 @@
+{
+  "growth_items": [
+    {
+      "growth_in_ticks": -72000,
+      "items": "dragonsurvival:star_bone"
+    }
+  ],
+  "is_default": false,
+  "is_natural_growth_stopped": {},
+  "growth_range": {
+    "min": 90.0,
+    "max": 300.0
+  },
+  "ticks_until_grown": 848000,
+  "modifiers": [
+    {
+      "amount": {
+        "type": "minecraft:linear",
+        "base": 2.0,
+        "per_level_above_first": 0.05
+      },
+      "attribute": "minecraft:generic.attack_damage",
+      "operation": "add_value"
+    },
+    {
+      "amount": {
+        "type": "minecraft:linear",
+        "base": 0.05,
+        "per_level_above_first": 0.001
+      },
+      "attribute": "minecraft:generic.jump_strength",
+      "operation": "add_value"
+    },
+    {
+      "amount": {
+        "type": "minecraft:linear",
+        "base": 0.5,
+        "per_level_above_first": 0.05
+      },
+      "attribute": "minecraft:generic.safe_fall_distance",
+      "operation": "add_value"
+    },
+    {
+      "amount": {
+        "type": "minecraft:linear",
+        "base": 0.1,
+        "per_level_above_first": 0.01
+      },
+      "attribute": "minecraft:generic.movement_speed",
+      "operation": "add_multiplied_total"
+    },
+    {
+      "amount": {
+        "precise_amount": 0.033333335,
+        "precise_base": -0.55
+      },
+      "attribute": "minecraft:generic.scale",
+      "operation": "add_value"
+    },
+    {
+      "amount": {
+        "type": "minecraft:linear",
+        "base": 0.6666667,
+        "per_level_above_first": 0.61
+      },
+      "attribute": "minecraft:generic.max_health",
+      "operation": "add_value"
+    },
+    {
+      "attribute": "minecraft:player.block_interaction_range",
+      "amount": {
+        "type": "minecraft:linear",
+        "base": 0.3,
+        "per_level_above_first": 0.01
+      },
+      "operation": "add_multiplied_base"
+    },
+    {
+      "attribute": "minecraft:player.entity_interaction_range",
+      "amount": {
+        "type": "minecraft:linear",
+        "base": 0.3,
+        "per_level_above_first": 0.025
+      },
+      "operation": "add_multiplied_base"
+    },
+    {
+      "amount": {
+        "type": "minecraft:linear",
+        "base": -6.523,
+        "per_level_above_first": 0.342
+      },
+      "attribute": "dragonsurvival:mana",
+      "operation": "add_value"
+    }
+  ]
+}

@@ -26,7 +26,7 @@ jobs:
         run: jq empty pack.mcmeta
 
       # A run that linted zero files would pass vacuously, so assert a non-zero count.
-      - name: Validate every datapack JSON parses
+      - name: Validate every datapack and resourcepack JSON parses
         run: |
           set -euo pipefail
           COUNT=0
@@ -36,7 +36,7 @@ jobs:
               exit 1
             fi
             COUNT=$((COUNT + 1))
-          done < <(find data -name '*.json' -print0)
+          done < <(find data assets -name '*.json' -print0)
 
           echo "Validated $COUNT JSON files."
           if [ "$COUNT" -le 0 ]; then

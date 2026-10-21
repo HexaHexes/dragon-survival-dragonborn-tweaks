@@ -1,0 +1,48 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "ds_dragonborn_cave_forest_sea"
+    }
+  ],
+  "custom_stage_progression": [
+    "dragonsurvival:dragonborn_newborn",
+    "dragonsurvival:dragonborn_young",
+    "dragonsurvival:dragonborn_adult",
+    "dragonsurvival:dragonborn_ancient"
+  ],
+  "bodies": [
+    "dragonsurvival:dragonborn",
+    "dragonsurvival:dragonborn_notail"
+  ],
+  "misc_resources": {
+    "ability_bar": "dragonsurvival:textures/gui/custom/casting_bars/sea/cast_bar.png",
+    "altar_banner": "dragonsurvival:textures/gui/custom/altar/dragonborn_sea/sea_altar_icon.png",
+    "food_tooltip": {
+      "nutrition_icon": "\\uEA03",
+      "saturation_icon": "\\uEA06"
+    },
+    "growth_crystal": {
+      "empty": "dragonsurvival:textures/gui/custom/stage/sea/point_main.png",
+      "full": "dragonsurvival:textures/gui/custom/stage/sea/point_hover.png"
+    },
+    "growth_left_arrow": {
+      "hover_icon": "dragonsurvival:textures/gui/custom/stage/sea/left_arrow_hover.png",
+      "icon": "dragonsurvival:textures/gui/custom/stage/sea/left_arrow_main.png"
+    },
+    "growth_right_arrow": {
+      "hover_icon": "dragonsurvival:textures/gui/custom/stage/sea/right_arrow_hover.png",
+      "icon": "dragonsurvival:textures/gui/custom/stage/sea/right_arrow_main.png"
+    },
+    "mana_sprites": {
+      "empty": "dragonsurvival:textures/gui/custom/mana_icons/sea/empty.png",
+      "full": "dragonsurvival:textures/gui/custom/mana_icons/sea/full.png",
+      "recovery": "dragonsurvival:textures/gui/custom/mana_icons/sea/recovery.png",
+      "reserved": "dragonsurvival:textures/gui/custom/mana_icons/sea/reserved.png"
+    },
+    "primary_color": "#2DA5E0",
+    "secondary_color": "#1D7099"
+  },
+  "penalties": "#dragonsurvival:dragonborn_sea",
+  "abilities": "#dragonsurvival:dragonborn_sea"
+}

@@ -1,0 +1,15 @@
+{
+  "species": "dragonsurvival:realistic_spider",
+  "stage": "dragonsurvival:realistic_spider_ancient",
+  "model": "dragonsurvival:cute_spider",
+  "parts": {
+    "base": "realistic_spider_base_1",
+    "eyes": "realistic_spider_eyes_1",
+    "horns": "realistic_spider_horns_2",
+    "bottom": "realistic_spider_bottom_1",
+    "spikes": "realistic_spider_spikes_1",
+    "teeth": "realistic_spider_teeth_1",
+    "claws": "realistic_spider_claws_1",
+    "magic": "realistic_spider_magic_2"
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "growth_items": [
+    {
+      "growth_in_ticks": -6000,
+      "items": "griffin_ds:poisonous_flesh"
+    },
+    {
+      "growth_in_ticks": 0,
+      "items": "griffin_ds:poisonous_pod"
+    },
+    {
+      "growth_in_ticks": 24000,
+      "items": "griffin_ds:juvenile_mix"
+    },
+    {
+      "growth_in_ticks": 12000,
+      "items": "minecraft:cake",
+      "maximum_usages": 1
+    },
+    {
+      "growth_in_ticks": 12000,
+      "items": "minecraft:pumpkin_pie",
+      "maximum_usages": 1
+    }
+  ],
+  "is_default": false,
+  "is_natural_growth_stopped": {
+    "type_specific": {
+      "type": "dragonsurvival:dragon_predicate",
+      "is_growth_stopped": true
+    }
+  },
+  "growth_range": {
+    "max": 40.0,
+    "min": 30.0
+  },
+  "ticks_until_grown": 732000,
+  "modifiers": [
+    {
+      "amount": 0.0,
+      "attribute": "minecraft:generic.attack_damage",
+      "operation": "add_value"
+    },
+    {
+      "amount": 3.0,
+      "attribute": "minecraft:generic.safe_fall_distance",
+      "operation": "add_value"
+    },
+    {
+      "amount": {
+        "precise_amount": 0.02,
+        "precise_base": -0.2
+      },
+      "attribute": "minecraft:generic.scale",
+      "operation": "add_value"
+    },
+    {
+      "amount": {
+        "type": "minecraft:linear",
+        "base": -5.6,
+        "per_level_above_first": 0.4
+      },
+      "attribute": "minecraft:generic.max_health",
+      "operation": "add_value"
+    },
+    {
+      "amount": -0.2,
+      "attribute": "dragonsurvival:flight_stamina",
+      "operation": "add_multiplied_total"
+    },
+    {
+      "amount": 0.0,
+      "attribute": "dragonsurvival:flight_speed",
+      "operation": "add_value"
+    },
+    {
+      "amount": {
+        "type": "minecraft:linear",
+        "base": 4.08,
+        "per_level_above_first": 0.255
+      },
+      "attribute": "dragonsurvival:mana",
+      "operation": "add_value"
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "growth_items": [
+    {
+      "growth_in_ticks": 72000,
+      "items": "desert_monster_ds:suspicious_canned_food"
+    },
+    {
+      "growth_in_ticks": 36000,
+      "items": "desert_monster_ds:smelly_canned_food"
+    },
+    {
+      "growth_in_ticks": 12000,
+      "items": "desert_monster_ds:terrible_canned_food"
+    },
+    {
+      "growth_in_ticks": -72000,
+      "items": "dragonsurvival:star_bone"
+    },
+    {
+      "growth_in_ticks": 0,
+      "items": "dragonsurvival:star_heart"
+    }
+  ],
+  "growth_range": {
+    "max": 25.0,
+    "min": 10.0
+  },
+  "is_default": false,
+  "is_natural_growth_stopped": {
+    "type_specific": {
+      "type": "dragonsurvival:dragon_predicate",
+      "is_growth_stopped": true
+    }
+  },
+  "ticks_until_grown": 416000,
+  "modifiers": [
+    {
+      "amount": 3.0,
+      "attribute": "minecraft:generic.attack_damage",
+      "operation": "add_value"
+    },
+    {
+      "amount": 0.002,
+      "attribute": "minecraft:generic.jump_strength",
+      "operation": "add_value"
+    },
+    {
+      "amount": 0.25,
+      "attribute": "minecraft:generic.safe_fall_distance",
+      "operation": "add_value"
+    },
+    {
+      "amount": {
+        "precise_amount": 0.0065,
+        "precise_base": -0.375
+      },
+      "attribute": "minecraft:generic.scale",
+      "operation": "add_value"
+    },
+    {
+      "amount": {
+        "type": "minecraft:linear",
+        "base": -5.6,
+        "per_level_above_first": 0.4
+      },
+      "attribute": "minecraft:generic.max_health",
+      "operation": "add_value"
+    },
+    {
+      "amount": {
+        "type": "minecraft:linear",
+        "base": 8.28,
+        "per_level_above_first": 0.08
+      },
+      "attribute": "dragonsurvival:mana",
+      "operation": "add_value"
+    }
+  ]
+}

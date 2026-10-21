@@ -1,0 +1,101 @@
+{
+  "growth_items": [
+    {
+      "growth_in_ticks": -3000,
+      "items": "griffin_ds:poisonous_flesh"
+    },
+    {
+      "growth_in_ticks": 0,
+      "items": "griffin_ds:poisonous_pod"
+    },
+    {
+      "growth_in_ticks": 12000,
+      "items": "griffin_ds:fledgling_mix"
+    },
+    {
+      "growth_in_ticks": 2000,
+      "items": "minecraft:cooked_beef",
+      "maximum_usages": 1
+    },
+    {
+      "growth_in_ticks": 2000,
+      "items": "minecraft:cooked_porkchop",
+      "maximum_usages": 1
+    },
+    {
+      "growth_in_ticks": 2000,
+      "items": "minecraft:cooked_mutton",
+      "maximum_usages": 1
+    },
+    {
+      "growth_in_ticks": 2000,
+      "items": "minecraft:cooked_chicken",
+      "maximum_usages": 1
+    },
+    {
+      "growth_in_ticks": 2000,
+      "items": "minecraft:cooked_rabbit",
+      "maximum_usages": 1
+    }
+  ],
+  "is_default": false,
+  "is_natural_growth_stopped": {
+    "type_specific": {
+      "type": "dragonsurvival:dragon_predicate",
+      "is_growth_stopped": true
+    }
+  },
+  "growth_range": {
+    "max": 30.0,
+    "min": 20.0
+  },
+  "ticks_until_grown": 60000,
+  "modifiers": [
+    {
+      "amount": -0.2,
+      "attribute": "minecraft:generic.attack_damage",
+      "operation": "add_multiplied_total"
+    },
+    {
+      "amount": 4.0,
+      "attribute": "minecraft:generic.safe_fall_distance",
+      "operation": "add_value"
+    },
+    {
+      "amount": {
+        "precise_amount": 0.02,
+        "precise_base": -0.5
+      },
+      "attribute": "minecraft:generic.scale",
+      "operation": "add_value"
+    },
+    {
+      "amount": {
+        "type": "minecraft:linear",
+        "base": -9.6,
+        "per_level_above_first": 0.4
+      },
+      "attribute": "minecraft:generic.max_health",
+      "operation": "add_value"
+    },
+    {
+      "amount": -0.4,
+      "attribute": "dragonsurvival:flight_stamina",
+      "operation": "add_multiplied_total"
+    },
+    {
+      "amount": -0.3,
+      "attribute": "dragonsurvival:flight_speed",
+      "operation": "add_value"
+    },
+    {
+      "amount": {
+        "type": "minecraft:linear",
+        "base": 6.6175,
+        "per_level_above_first": 0.1675
+      },
+      "attribute": "dragonsurvival:mana",
+      "operation": "add_value"
+    }
+  ]
+}

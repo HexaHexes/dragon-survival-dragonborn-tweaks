@@ -1,0 +1,12 @@
+{
+  "species": "dragonsurvival:dragonborn_sea",
+  "stage": "dragonsurvival:dragonborn_newborn",
+  "model": "dragonsurvival:dragonborn",
+  "parts": {
+    "base": "base_2",
+    "bottom": "bottom_2",
+    "horns": "horns_46",
+    "spikes": "spikes_2",
+    "magic": "sea_magic_3"
+  }
+}
